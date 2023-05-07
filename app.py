@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from markupsafe import Markup
 import scrapper
 
 app = Flask(__name__)
