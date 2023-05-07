@@ -1,1 +1,1 @@
-gunicorn app:app --log-file=- --pythonpath /app.
+gunicorn app:app
