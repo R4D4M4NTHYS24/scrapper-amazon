@@ -1,17 +1,25 @@
 from flask import Flask, jsonify
-from markupsafe import Markup
-import scrapper
+from bs4 import BeautifulSoup
+import requests
+
 
 app = Flask(__name__)
 
 @app.route('/amazon', methods=["GET"])
 def amazon():
-    scrapper_data = scrapper.get_data()
-
-    if scrapper_data["status_code"] == 200:
-        urls = scrapper_data["urls"]
-        urls = [f"https://www.amazon.com{i.get('href')}" for i in urls[:5]]
-        print(urls)
+    word = "play5"
+    url = "https://www.amazon.com/s?k={}".format(word)
+    headers = {"FUser": "An","user-agent": "an"}
+    response = requests.get(url, headers=headers)
+   
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        try:
+            urls = soup.find('div', attrs={"class": "s-main-slot s-result-list s-search-results sg-row"}).find_all('a', attrs={"class": "a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal"})
+            urls = [f"https://www.amazon.com{i.get('href')}" for i in urls[:5]]
+        except:
+            urls = []    
+      
         return jsonify({"data": urls})
 
     return jsonify({"response": "failed!"})
