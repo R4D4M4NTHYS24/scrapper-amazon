@@ -3,19 +3,17 @@ import scrapper
 
 app = Flask(__name__)
 
-@app.route('/amazon',methods=["GET"])
+@app.route('/amazon', methods=["GET"])
 def amazon():
-    scrapper
+    scrapper_data = scrapper.get_data()
 
-    if scrapper.response.status_code == 200:
-        soup = scrapper.soup
-        urls = scrapper.urls        
-        urls = [ "https://www.amazon.com"+i.get('href') for i in urls[:5] ]
+    if scrapper_data["status_code"] == 200:
+        urls = scrapper_data["urls"]
+        urls = [f"https://www.amazon.com{i.get('href')}" for i in urls[:5]]
         print(urls)
-        return jsonify({"data":urls})
+        return jsonify({"data": urls})
 
-    return jsonify ({"response:failed!"})
+    return jsonify({"response": "failed!"})
 
 if __name__ == "__main__":
-    app.run(debug=True,port=5000,host="0.0.0.0")
-
+    app.run(debug=True, port=5000, host="0.0.0.0")
